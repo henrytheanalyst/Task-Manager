@@ -1,13 +1,48 @@
 import { useState } from "react";
-import './Landing.css'
+import './Landing.css';
+import axios from 'axios';
+
 function LandingPage(){
     const [mode,setMode]=useState('login');
     const [email,setEmail]=useState("");
     const [password,setPassword]=useState("");
-    const [name,setName]=useState("")
+    const [name,setName]=useState("");
+    const [msg,setMsg]=useState("");
+    const [msgType,setMsgType]=useState("");
+    async function handleSubmit(e){
+        e.preventDefault();
+        setMsg("");
+        if (mode === 'signup') {
+            try {
+                const response = await axios.post(
+                    "http://localhost:3000/jarvis/signup",
+                    {    
+                        name:name,
+                        email:email,
+                        password:password
+
+                    }
+                );                
+                setMsg(response.data.message);
+                setMsgType("success")
+                
+
+            } catch (error) {
+            setMsg(error.response?.data?.message || 'We are currently experiencing technical problem');
+
+            setMode(login);
+
+                
+            }
+        } else {
+            const response=await axios.post(
+                ""
+            )
+        }
+    }
     return(
         <section className="landing-area">
-            <form action="" className="form">
+            <form action="" className="form" onSubmit={handleSubmit}>
                 <h2>
                     {mode === 'signup'? "Create your account":"Welcome Back"}
                 </h2>
