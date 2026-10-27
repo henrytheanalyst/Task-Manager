@@ -25,24 +25,43 @@ function LandingPage(){
                 );                
                 setMsg(response.data.message);
                 setMsgType("success")
+                setMode('login');
+                setName("");
+                setEmail("");
+                setPassword("")
                 
 
             } catch (error) {
-            setMsg(error.response?.data?.message || 'We are currently experiencing technical problem');
-
-            setMode(login);
-
-                
+            setMsg(error.response?.data?.message || 'We are currently experiencing technical problem');  
+            setMsgType("error");                 
             }
         } else {
-            const response=await axios.post(
-                ""
+            try {
+                const response=await axios.post(
+                "http://localhost:3000/jarvis/login",
+                {    
+                    email:email,
+                    password:password
+
+                }
             )
+            localStorage.setItem("token",response.data.token)
+            setMsg(response.data.message);
+            setMsgType("success")
+            } catch (error) {
+                setMsg(error.response?.data?.message || 'We are currently experiencing technical problem');
+                setMsgType("error");
+            }
         }
     }
     return(
         <section className="landing-area">
             <form action="" className="form" onSubmit={handleSubmit}>
+                {msg && (
+                    <div className={`message-area ${msgType}`}>
+                        {msg}
+                    </div>
+                )}
                 <h2>
                     {mode === 'signup'? "Create your account":"Welcome Back"}
                 </h2>
@@ -51,9 +70,10 @@ function LandingPage(){
                 </p>
                 {mode === 'signup' && (
                     <div className="form-group">
-                        <label htmlFor="fullname">Full Name</label>
+                        <label htmlFor="name">Full Name</label>
                         <input 
                             type="text"
+                            id="name"
                             value={name}
                             required
                             placeholder="Alex Morgan"
@@ -65,6 +85,7 @@ function LandingPage(){
                     <label htmlFor="email">Email</label>
                     <input 
                         type="email" 
+                        id="email"
                         required 
                         placeholder="you@company.com"
                          value={email} 
@@ -75,6 +96,7 @@ function LandingPage(){
                     <label htmlFor="password">Password</label>
                     <input 
                         type="password"
+                        id="password"
                         required 
                         placeholder="At least 8 characters" 
                         minLength={8}
@@ -83,9 +105,9 @@ function LandingPage(){
                 </div>
                 <button type="submit" className="submit-btn">{mode === 'login'? "Log in":"Sign up"}</button>
 
-                    <p type="button" onClick={()=>setMode(prevMode=>prevMode === 'signup' ? "login":"signup")} className="toggle-signup">
+                    <button type="button" onClick={()=>setMode(prevMode=>prevMode === 'signup' ? "login":"signup")} className="toggle-signup">
                        {mode === 'signup'? "Already have an account? Log in":" New to focusly? Create an account"}
-                    </p>
+                    </button>
 
             </form>
         </section>
